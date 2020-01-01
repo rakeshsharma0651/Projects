@@ -1,0 +1,31 @@
+class Node()
+    def __init__(self,data)
+        self.data = data
+        self.left = None
+        self.right = None
+
+def depth(node,data,p=1)
+    if node == None
+        return 0
+    if node.data == data
+        return p
+    p1 = depth(node.left,data,p+1)
+    if p1!=0
+        return p1
+    p1 = depth(node.right,data,p+1)
+    return p1
+
+if __name__ == '__main__' 
+    a = Node(3)
+    a.left = Node(2)
+    a.right = Node(5)
+    a.left.left = Node(1)
+    a.left.right = Node(4)
+    
+    number_in = int(input(Kindly enter input No. for position to be checked))
+    reslt = depth(a,number_in)
+    
+    if reslt != 0
+        print(number_in,  is present at Level ,reslt)
+    else
+        print(Given No. not present in the binary tree.)

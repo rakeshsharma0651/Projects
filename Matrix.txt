@@ -1,0 +1,196 @@
+def Matrix_addition(m1,m2):
+    '''
+    DOCSTRING: Matrix Addition Function
+    '''
+    add_matrix = []
+    tmp_list = []
+    for i in range(len(m1)):
+        for j in range(len(m1[0])):
+            tmp_list.append(m1[i][j] + m2[i][j])
+        add_matrix.append(tmp_list)
+        tmp_list = []
+    return add_matrix
+
+def Matrix_subtraction(m1,m2):
+    '''
+    DOCSTRING: Matrix Subtraction Function
+    '''
+    sub_matrix = []
+    tmp_list = []
+    for i in range(len(m1)):
+        for j in range(len(m1[0])):
+            tmp_list.append(m1[i][j] - m2[i][j])
+        sub_matrix.append(tmp_list)
+        tmp_list = []
+    return sub_matrix
+
+def Matrix_multiplication(m1,m2):
+    '''
+    DOCSTRING: Matrix Multiplication Function
+    '''
+    mul_matrix = []
+    tmp_list = []
+    element = 0
+    r1 = len(m1)
+    r2 = len(m2)
+    c2 = len(m2[0])
+    for i in range(r1):
+        for j in range(c2):
+            for k in range(r2):
+                element+= m1[i][k]*m2[k][j]
+            tmp_list.append(element)
+            element = 0
+        mul_matrix.append(tmp_list)
+        tmp_list = []
+    return(mul_matrix)
+
+def Matrix_transpose(m1):
+    '''
+    DOCSTRING: Matrix Transpose
+    '''
+    r = len(m1)
+    c = len(m1[0])
+    trnsp_matrix = []
+    tmp_list = []
+    for i in range(c):
+        tmp_list.append(list('0'*r))
+    for i in range(c):
+        for j in range(r):
+            tmp_list[i][j] = m1[j][i]
+    return tmp_list
+
+def reduce_Matrix(m,i,j):
+    '''
+    DOCSTRING: Reduction of Matrix
+    '''
+    return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]
+
+def Matrix_Determinant(m):
+    '''
+    DOCSTRING: Finding determinant of Matrix
+    '''
+    #case for 2x2 matrix
+    if len(m) == 2:
+        return m[0][0]*m[1][1]-m[0][1]*m[1][0]
+
+    determinant = 0
+    for c in range(len(m)):
+        determinant += ((-1)**c)*m[0][c]*Matrix_Determinant(reduce_Matrix(m,0,c))
+    return determinant
+
+def Matrix_Inverse(m):
+    '''
+    DOCSTRING: Finding Inverse of Matrix
+    '''
+    determinant = Matrix_Determinant(m)
+    if determinant == 0:
+        raise exception ('Action can not be performed as deteminant is Zero')
+    #special case for 2x2 matrix:
+    if len(m) == 2:
+        return [[m[1][1]/determinant, -1*m[0][1]/determinant],
+                [-1*m[1][0]/determinant, m[0][0]/determinant]]
+
+    #find matrix of cofactors
+    cofactors = []
+    for r in range(len(m)):
+        cofactorRow = []
+        for c in range(len(m)):
+            minor = reduce_Matrix(m,r,c)
+            cofactorRow.append(((-1)**(r+c)) * Matrix_Determinant(minor))
+        cofactors.append(cofactorRow)
+    cofactors = Matrix_transpose(cofactors)
+    for r in range(len(cofactors)):
+        for c in range(len(cofactors)):
+            cofactors[r][c] = cofactors[r][c]/determinant
+    return cofactors
+
+choice = 0
+while int(choice) != 9:
+    M1 = []
+    M2 = []
+    print('-'*127)
+    print('Welcome to Matrix Operartions'.center(127))
+    print('-'*127)
+    print('Select choice to perform operations:'.ljust(127))
+    print('1. Addition of 2 Matrices:'.ljust(127))
+    print('2. Subtraction of 2 Matrices:'.ljust(127))
+    print('3. Multiplication of 2 Matrices:'.ljust(127))
+    print('4. Transpose of a Matrix:'.ljust(127))
+    print('5. Inverse of a Matrix:'.ljust(127))
+    print('6. Division of Matrices:'.ljust(127))
+    print('-'*127)
+    print('Press 9 to Exit:')
+
+    choice = int(input())
+    if choice == 9:
+        break
+    
+    #Input Dimension
+    if choice in (1,2,3,6):
+        row1,col1 = map(int,input("Dimension of Matrix-1 row & column seperated by space:").split())
+        row2,col2 = map(int,input("Dimension of Matrix-2 row & column seperated by space:").split())
+    elif choice in (4,5):
+        row1,col1 = map(int,input("Dimension of Matrix-1 row & column seperated by space:").split())
+    else:
+        print("Kindly select correct option:")
+        continue
+    
+    #Pre Check for operations
+    if (choice == 1 or choice == 2) and (row1 != row2 or col1 != col2):
+        print("Required Operation can not be performed as dimension of given matrices are same !!")
+        continue
+    elif choice == 3 and col1 != row2:
+        print("Required Operation can not be performed as columns of Matrix 1 not equal to rows of Matrix2 !!")
+        continue
+    elif (choice == 5 and row1 != col1) or (choice == 6 and row1 != col1 and row2!= col2):
+        print("Required Operation can not be performed as Matrix/matrices given are not square !!")
+        continue
+    
+    #Input Matrices
+    if choice in (1,2,3,6):
+        print("Kindly Input Matrix 1 values row by row, values to be seperated by space:")
+        for i in range(row1):
+            M1.append(list(map(int,input("Elements: Row - " + str(i+1) + " - ").split())))
+        print("Kindly Input Matrix 2 values row by row, values to be seperated by space:")
+        for j in range(row2):
+            M2.append(list(map(int,input("Elements: Row - " + str(j+1) + " - ").split())))
+    else:
+        print("Kindly Input Matrix values row by row, values to be seperated by space:")
+        for i in range(row1):
+            M1.append(list(map(int,input("Elements: Row - " + str(i+1) + " - ").split())))
+       
+    if choice == 1:
+        result = Matrix_addition(M1,M2)
+        print("\nThe resultant Matrix after addition is:\n\n")
+    elif choice == 2:
+        result = Matrix_subtraction(M1,M2)
+        print("\nThe resultant Matrix after subtraction is:\n\n")
+    elif choice == 3:
+        result = Matrix_multiplication(M1,M2)
+        print("\nThe resultant Matrix after mulltiplication is:\n\n")
+    elif choice == 4:
+        result = Matrix_transpose(M1)
+        print("\nThe resultant Transpose Matrix is:\n\n")
+    elif choice == 5:
+        result = Matrix_Inverse(M1)
+        print("\nThe resultant Inverse Matrix is:\n\n")
+    elif choice == 6:
+        print('Kindly select below:'.ljust(127))
+        print('1. Division: A/B'.ljust(127))
+        print('2. Division: B/A'.ljust(127))
+        a = int(input())
+        if a == 1:
+            result = Matrix_multiplication(M1,Matrix_Inverse(M2))    
+            print("\nThe resultant Matrix after Division is:\n\n")
+        elif a == 2:
+            result = Matrix_multiplication(M2,Matrix_Inverse(M1))
+            print("\nThe resultant Matrix after Division is:\n\n")
+        else:
+            print("Kindly select correct option:")
+            continue
+    for i in range(len(result)):
+        print(str(result[i]).center(len(result)*10),end ="\n") 
+
+    print("\n\nDo you want to Continue: To continue Press 8, To Exit Press 9:")
+    choice = int(input())
+print('\nThank you !!!'.center(127))
